@@ -26,6 +26,13 @@ function Terrain(opts){
 	4	3 	3 	3 	3 	3 	4
 	4 	4 	4 	4 	4 	4 	4
 
+				4			
+			4	3	4		
+		4	3	2	3	4	
+	4	3	2	1	2	3	4
+		4	3	2	3	4	
+			4	3	4		
+				4										
 
 	snakes around, starting at center.
 	One move, turn, one move, turn, repeat.

@@ -26,14 +26,26 @@
 	<script src="terrain.js"></script>
 	<script src="terrainmap.js"></script>
 	<script type="text/javascript">
-		var terrain = new Terrain(
+		var terrain_opts = {
+			width 	: 100,
+			length 	: 100,
+			height 	: 10,
+			empty   : true
+		};
+
+		var terrain_empty = new Terrain(
 			{
 				width 	: 100,
 				length 	: 100,
-				height 	: 10
+				height 	: 10,
+				empty   : true
 			}
 		);
 
-		var terrainMap = new TerrainMap(terrain, '#map');
+		var terrainMap = new TerrainMap(terrain_empty, '#map');
+		
+		setInterval(function(){
+			terrainMap.update(new Terrain(terrain_opts).contents);
+		},3000);
 	</script>
 </html>
