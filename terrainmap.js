@@ -125,8 +125,8 @@ var TerrainMap = function(terrain, elID, cycle){
 	this.mesh_geo.computeFaceNormals();
 
 	this.mesh_obj = new THREE.Mesh(this.mesh_geo, new THREE.MeshPhongMaterial({
-		color: 0x796060,
-		wireframe : true
+		color: 0x796060/*,
+		wireframe : true*/
 	}));
 
 
