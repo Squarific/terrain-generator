@@ -2,14 +2,16 @@ function Terrain(opts){
 	var dis = this;
 	//length width height
 
-	function generateFlat(l,w){
+	var occupado = [];
+
+	function generateFlat(l,w,forceHeight){
 		var returnArr = [];
 		for(i=0;i<l;i++){
 			for(j=0;j<w;j++){
 				if(j==0) {
 					returnArr.push([]);
 				}
-				returnArr[i][j] = Math.random()*0.2;
+				returnArr[i][j] = typeof(forceHeight) == 'undefined' ? Math.random()*0.2 : forceHeight;
 			}
 		}
 		return returnArr;
@@ -32,7 +34,21 @@ function Terrain(opts){
 	4	3	2	1	2	3	4
 		4	3	2	3	4	
 			4	3	4		
-				4										
+				4	
+
+
+	1   2   3   4   5   6   7   8
+	  1   2   3   4   5   6   7   8
+	1   2   3   4   5   6   7   8
+	  1   2   3   4   5   6   7   8
+	1   2   3   4   5   6   7   8
+	  1   2   3   4   5   6   7   8
+	1   2   3   4   5   6   7   8
+	  1   2   3   4   5   6   7   8
+	1   2   3   4   5   6   7   8
+	  1   2   3   4   5   6   7   8
+	1   2   3   4   5   6   7   8
+	  1   2   3   4   5   6   7   8
 
 	snakes around, starting at center.
 	One move, turn, one move, turn, repeat.
@@ -147,11 +163,21 @@ function Terrain(opts){
 		var cur_y = pos_y;
 		var slope = 1;
 		
+		var total_steps = Math.floor(height/slope);
+
+		if(! testOccupied(cur_x-total_steps,cur_y-total_steps,cur_x+total_steps,cur_y+total_steps)){
+			return;
+		}
 
 		dis.contents[cur_x][cur_y] = height;
+		dis.occupado[cur_x][cur_y] = true;
+
 		var cur_height = height;
 
-		for (var i=0;i<height/slope;i++) {
+		//determine whether it can select the current position.
+
+
+		for (var i=0;i<total_steps;i++) {
 			cur_y++;
 			if(i > 0){
 				cur_y++;
@@ -203,6 +229,7 @@ function Terrain(opts){
 				cur_x < max_x
 			){
 				dis.contents[cur_x][cur_y] = cur_height;
+				dis.occupado[cur_x][cur_y] = true;
 			}
 			//console.log(cur_x+','+cur_y+','+cur_height);
 		}
@@ -213,11 +240,54 @@ function Terrain(opts){
 		return Math.floor(Math.random() * max);
 	}
 
+	function testOccupied(min_x,min_y,max_x,max_y){
+		//max and min out the vars to reduce the amount to run through the array
+		min_x = min_x >= 0 ? min_x : 0;
+		min_y = min_y >= 0 ? min_y : 0;
+
+		max_x = max_x <= dis.contents.length ? max_x : dis.contents.length;
+		max_y = max_y <= dis.contents.length ? max_y : dis.contents.length;
+
+		for (var i=min_x; i<max_x; i++) {
+			for (var j=min_y; j<max_y; j++) {
+				if(dis.occupado[i][j] == true){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	/*************************/
 
 	this.contents = generateFlat(opts.width,opts.length);
-	for(k=0;k<20;k++){
-		createLessShittySquarePyramid(raound(20),raound(this.contents.length),raound(this.contents[0].length));	
+	this.occupado = generateFlat(opts.width,opts.length,0);
+
+	for(k=0;k<500;k++){
+		var x = raound(this.contents.length);
+		var y = raound(this.contents[0].length);
+
+		if(
+			(x%2==0 && y%2==0) ||
+			(x%2==1 && y%2==1)
+		){
+			createLessShittySquarePyramid(raound(10),x,y);
+			//console.log(countTrue(dis.occupado));
+		}else{
+			//create triangle pyramid?
+		}
 	}
+
+	//function countTrue(arr){
+	//	var trues = 0;
+	//	for (var i=0; i<arr.length; i++) {
+	//		for (var j=0; j<arr[0].length; j++) {
+	//			if(arr[i][j] == true){
+	//				trues++;
+	//			}
+	//		}
+	//	}
+	//	return trues;
+	//}
 
 }

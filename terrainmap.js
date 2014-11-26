@@ -82,7 +82,7 @@ var TerrainMap = function(terrain, elID, cycle){
 	this.mesh_geo = new THREE.Geometry();
 	this.mesh_geo.dynamic = true;
 
-	
+	var unit = 1; //distance between each vertex
 	this.generate = function(mesh) {
 		var vertices = [];
 		var faces = [];
@@ -90,22 +90,48 @@ var TerrainMap = function(terrain, elID, cycle){
 
 		for (var i=0; i<mesh.length; i++) {
 			for(var j=0; j<mesh[i].length; j++) {
-				vertices.push( new THREE.Vector3( j, i, mesh[i][j] ) );
+				vertices.push( new THREE.Vector3( j*unit, i*unit, mesh[i][j] * unit ) );
 			}
 		}
 
 		for (var i=0; i<mesh.length-1; i++) {
 			for(var j=0; j<mesh[i].length-1; j++) {
+
 				var top_left = (i * mesh.length) + j;
 				var bottom_left = ( (i+1) * mesh.length ) + j;
 				var top_right = (i * mesh.length) + j + 1;
 				var bottom_right = ( (i+1) * mesh.length ) + j + 1;
 
+				//if x%2==0 && y%2==0
+				//or if x%2==1 && y%2==1
+				/*  ___
+					|\|
+					---  */
+				if( 
+					( i%2==0 && j%2==0 ) ||
+					( i%2==1 && j%2==1 )
+				){
+					faces.push(new THREE.Face3( top_left, top_right, bottom_right) );
+					faces.push(new THREE.Face3( bottom_right, bottom_left, top_left) );
+				}else{
+					faces.push(new THREE.Face3( top_right, bottom_right, bottom_left) );
+					faces.push(new THREE.Face3( bottom_left, top_left, top_right) );
+				}
+				//else
+				/*  ___
+					|/|
+					---   */
+
+
+				
+				
+				
+				
+
 				//console.log( "top_left, top_right, bottom_right");
 				//console.log( top_left+" "+top_right+" "+bottom_right);
 				
-				faces.push(new THREE.Face3( top_left, top_right, bottom_right) );
-				faces.push(new THREE.Face3( bottom_right, bottom_left, top_left) );
+				
 			}
 		}
 		this.mesh_geo.vertices = vertices;
@@ -125,8 +151,8 @@ var TerrainMap = function(terrain, elID, cycle){
 	this.mesh_geo.computeFaceNormals();
 
 	this.mesh_obj = new THREE.Mesh(this.mesh_geo, new THREE.MeshPhongMaterial({
-		color: 0x796060/*,
-		wireframe : true*/
+		color: 0x796060,
+		wireframe : true
 	}));
 
 
