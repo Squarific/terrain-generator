@@ -31,13 +31,13 @@ var TerrainMap = function(terrain, elID, cycle){
 		return false;
 	}
 
-	var scene = new THREE.Scene();
+	this.scene = new THREE.Scene();
 	this.camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
-	var renderer = new THREE.WebGLRenderer();
-	renderer.setSize(window.innerWidth, window.innerHeight);
+	this.renderer = new THREE.WebGLRenderer();
+	this.renderer.setSize(window.innerWidth, window.innerHeight);
 
-	document.querySelector(elID).appendChild(renderer.domElement);
+	document.querySelector(elID).appendChild(this.renderer.domElement);
 
 	/*var geometry 	= new THREE.Geometry();
 
@@ -73,11 +73,11 @@ var TerrainMap = function(terrain, elID, cycle){
 	//point light
 	this.light = new THREE.PointLight( 0xff0000, 1.5, 100 );
 	this.light.position.set(20,20,50);
-	scene.add( this.light );
+	this.scene.add( this.light );
 
 	//ambient light
-	var ambilight = new THREE.HemisphereLight(0xE8F5F8, 0x4A554D, 1);
-	scene.add( ambilight );
+	var ambilight = new THREE.HemisphereLight(0xE8F5F8, 0x4A554D, 0.5);
+	this.scene.add( ambilight );
 
 	this.mesh_geo = new THREE.Geometry();
 	this.mesh_geo.dynamic = true;
@@ -104,9 +104,6 @@ var TerrainMap = function(terrain, elID, cycle){
 
 				//if x%2==0 && y%2==0
 				//or if x%2==1 && y%2==1
-				/*  ___
-					|\|
-					---  */
 				if( 
 					( i%2==0 && j%2==0 ) ||
 					( i%2==1 && j%2==1 )
@@ -117,16 +114,6 @@ var TerrainMap = function(terrain, elID, cycle){
 					faces.push(new THREE.Face3( top_right, bottom_right, bottom_left) );
 					faces.push(new THREE.Face3( bottom_left, top_left, top_right) );
 				}
-				//else
-				/*  ___
-					|/|
-					---   */
-
-
-				
-				
-				
-				
 
 				//console.log( "top_left, top_right, bottom_right");
 				//console.log( top_left+" "+top_right+" "+bottom_right);
@@ -142,6 +129,7 @@ var TerrainMap = function(terrain, elID, cycle){
 			this.mesh_obj.material.color = new THREE.Color( (Math.random()*0.5)+0.5,(Math.random()*0.5)+0.5,(Math.random()*0.5)+0.5 );
 			this.mesh_geo.computeFaceNormals();
 			this.mesh_geo.verticesNeedUpdate = true;
+			this.mesh_geo.normalsNeedUpdate = true;
 		}
 	}
 
@@ -151,8 +139,14 @@ var TerrainMap = function(terrain, elID, cycle){
 	this.mesh_geo.computeFaceNormals();
 
 	this.mesh_obj = new THREE.Mesh(this.mesh_geo, new THREE.MeshPhongMaterial({
-		color: 0x796060,
+		color: new THREE.Color( (Math.random()*0.5)+0.5,(Math.random()*0.5)+0.5,(Math.random()*0.5)+0.5 ),
 		wireframe : true
+		
+		//specular: '#a9fcff',
+	// intermediate
+        //color: '#00abb1',
+	// dark
+        //emissive: '#006063'
 	}));
 
 
@@ -163,7 +157,7 @@ var TerrainMap = function(terrain, elID, cycle){
 	this.mesh_obj.position.set( 0, 0, 0 );
 	this.mesh_obj.geometry.applyMatrix(new THREE.Matrix4().makeTranslation( offset_x, offset_y, 0 ) );
 
-	scene.add(this.mesh_obj);
+	this.scene.add(this.mesh_obj);
 
 
 	this.camera.rotation.x = this.de2ra(90);
@@ -177,11 +171,16 @@ var TerrainMap = function(terrain, elID, cycle){
 	var dis = this;
 
 	function render() {
+		if(dis.queuerender) {
+			dis.generate(dis.queuerender);
+			dis.queuerender = false;
+		}
 		dis.mesh_obj.rotateZ(dis.de2ra(0.1));
+		dis.renderer.render( dis.scene, dis.camera );
 		requestAnimationFrame( render );
-		renderer.render( scene, dis.camera );
 	}
 	render();
+	this.renderer.render( this.scene, this.camera );
 }
 
 TerrainMap.prototype.update = function(mesh){

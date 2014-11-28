@@ -145,17 +145,6 @@ function Terrain(opts){
 			4	3 	3 	3 	3 	3 	4 		(n+1)*2
 			4 	4 	4 	4 	4 	4 	4
 
-
-
-
-
-						26,88	27,88	28,88
-						26,89	num 	28,89
-						26,90	27,90 	28,90
-
-
-
-
 		***************/
 		var max_x = dis.contents.length;
 		var max_y = dis.contents[0].length;
@@ -277,17 +266,5 @@ function Terrain(opts){
 			//create triangle pyramid?
 		}
 	}
-
-	//function countTrue(arr){
-	//	var trues = 0;
-	//	for (var i=0; i<arr.length; i++) {
-	//		for (var j=0; j<arr[0].length; j++) {
-	//			if(arr[i][j] == true){
-	//				trues++;
-	//			}
-	//		}
-	//	}
-	//	return trues;
-	//}
 
 }
