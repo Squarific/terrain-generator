@@ -12,7 +12,7 @@
 				width: 100%;
 				height: 100%;
 				background: #272727;
-				position: absolute;
+				position: fixed;
 				top:0;
 				left:0;
 			}
@@ -44,8 +44,8 @@
 
 		var terrainMap = new TerrainMap(terrain_empty, '#map');
 		
-		setInterval(function(){
-			terrainMap.update(new Terrain(terrain_opts).contents);
-		},5000);
+		//setInterval(function(){
+		//	terrainMap.update(new Terrain(terrain_opts).contents);
+		//},5000);
 	</script>
 </html>

@@ -140,7 +140,7 @@ var TerrainMap = function(terrain, elID, cycle){
 
 	this.mesh_obj = new THREE.Mesh(this.mesh_geo, new THREE.MeshPhongMaterial({
 		color: new THREE.Color( (Math.random()*0.5)+0.5,(Math.random()*0.5)+0.5,(Math.random()*0.5)+0.5 ),
-		wireframe : true
+		//wireframe : true
 		
 		//specular: '#a9fcff',
 	// intermediate

@@ -177,7 +177,7 @@ function Terrain(opts){
 			}
 			cur_x--;
 			cur_height -= slope;
-			updatePointIfPossible();
+			updatePointIfPossible(cur_x,cur_y,cur_z);
 			
 			//steps to move calculation: i-
 			var steps = (i+1) * 2;
@@ -208,25 +208,90 @@ function Terrain(opts){
 							cur_x --;
 							break;
 					}
-					updatePointIfPossible();
+					updatePointIfPossible(cur_x,cur_y,cur_z);
 				}
 			}
 
 		}
+	}
 
-		function updatePointIfPossible(){
-			if(
-				cur_y >= 0 &&
-				cur_y < max_y &&
-				cur_x >= 0 &&
-				cur_x < max_x
-			){
-				dis.contents[cur_x][cur_y] = cur_height;
-				dis.occupado[cur_x][cur_y] = true;
+	function updatePointIfPossible(x,y,z,additive){
+		if(
+			y >= 0 &&
+			y < dis.contents[0].length &&
+			x >= 0 &&
+			x < dis.contents.length
+		){
+			if(typeof(additive) == 'boolean' && additive == true){
+				dis.contents[x][y] += z;
+			}else if(typeof(additive) == 'function'){
+				if(additive()){
+					dis.contents[x][y] += z;
+				}else{
+					dis.contents[x][y] = z;
+				}
+			}else{
+				dis.contents[x][y] = z;
 			}
-			//console.log(cur_x+','+cur_y+','+cur_height);
+			dis.occupado[x][y] = true;
+			return true;
 		}
+		return false;
+		//console.log(cur_x+','+cur_y+','+cur_height);
+	}
 
+	function snakeHill(){
+		//select a random point and rough vector, and start snakin'
+		var max_x = dis.contents.length;
+		var max_y = dis.contents[0].length;
+		var cur_x = Math.round(Math.random()*dis.contents.length);
+		var cur_y = Math.round(Math.random()*dis.contents[0].length);
+
+		dis.contents[cur_x][cur_y] = 2;
+
+		var mountainRangeOccupado = cloneOccupado();
+
+		//rough vectors: % of chance it will go in either direction.
+		var roughVectorX = 0;
+		while(roughVectorX == 0){ roughVectorX = (Math.random()*2) - 1; } //force not 0, obvs.
+		var roughVectorY = 0;
+		while(roughVectorY == 0){ roughVectorY = (Math.random()*2) - 1; }
+
+		for(var i=0; i<500; i++){
+			//each turn will allow it to move either 1 by x and/or y. 
+			//Direction should be determined by roughVector props
+			var x_changes = Math.random() > Math.abs(roughVectorX);
+			var y_changes = Math.random() > Math.abs(roughVectorY);
+
+			if(x_changes){
+				cur_x += roughVectorX > 0 ? 1 : -1;
+			}
+
+			if(y_changes){
+				cur_y += roughVectorY > 0 ? 1 : -1;
+			}
+
+
+
+			//if bad position, break
+			if(! updatePointIfPossible(cur_x,cur_y,2,function(){mountainRangeOccupado[cur_x][cur_y] != true})){
+				break;
+			}
+			
+		}
+	}
+
+	function cloneOccupado(){
+		var occ = [];
+		for(var i=0; i<dis.occupado.length; i++)
+		{
+			occ.push([]);
+			for(var j=0; j>dis.occupado[i].length; i++)
+			{
+				occ[i][j] = dis.occupado[i][j];
+			}
+		}
+		return occ;
 	}
 
 	function raound(max){
@@ -256,6 +321,11 @@ function Terrain(opts){
 	this.contents = generateFlat(opts.width,opts.length);
 	this.occupado = generateFlat(opts.width,opts.length,0);
 
+	for(k=0;k<20;k++){
+		snakeHill();
+	}
+
+/*
 	for(k=0;k<500;k++){
 		var x = raound(this.contents.length);
 		var y = raound(this.contents[0].length);
@@ -270,5 +340,6 @@ function Terrain(opts){
 			//create triangle pyramid?
 		}
 	}
+*/
 
 }
