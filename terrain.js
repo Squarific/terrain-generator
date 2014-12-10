@@ -158,8 +158,12 @@ function Terrain(opts){
 			return;
 		}
 
-		dis.contents[cur_x][cur_y] = height;
+
+		if(dis.occupado[cur_x][cur_y]){
+			return;
+		}
 		dis.occupado[cur_x][cur_y] = true;
+		dis.contents[cur_x][cur_y] = height;
 
 		var cur_height = height;
 
